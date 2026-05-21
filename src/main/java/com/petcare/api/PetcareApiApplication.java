@@ -8,6 +8,7 @@ public class PetcareApiApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(PetcareApiApplication.class, args);
+		System.out.println("commit");
 	}
 
 }
