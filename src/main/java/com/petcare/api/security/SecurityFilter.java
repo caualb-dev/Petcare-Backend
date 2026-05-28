@@ -1,6 +1,7 @@
 package com.petcare.api.security;
 
-import com.petcare.api.repository.UsuarioRepository;
+import com.petcare.api.model.entity.Usuario;
+import com.petcare.api.service.UsuarioService;
 import com.petcare.api.service.TokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -8,13 +9,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.List;
 
 @Component
 public class SecurityFilter extends OncePerRequestFilter {
@@ -23,7 +22,7 @@ public class SecurityFilter extends OncePerRequestFilter {
     private TokenService tokenService;
 
     @Autowired
-    private UsuarioRepository usuarioRepository;
+    private UsuarioService usuarioService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -36,15 +35,10 @@ public class SecurityFilter extends OncePerRequestFilter {
         if (token != null) {
             String username = tokenService.validarToken(token);
             if (username != null) {
-                var usuario = usuarioRepository.findByUsername(username)
-                        .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-
-                var authorities = List.of(
-                        new SimpleGrantedAuthority("ROLE_" + usuario.getRole().name())
-                );
+                Usuario usuario = (Usuario) usuarioService.loadUserByUsername(username);
 
                 var authentication = new UsernamePasswordAuthenticationToken(
-                        usuario, null, authorities
+                        usuario, null, usuario.getAuthorities()
                 );
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
