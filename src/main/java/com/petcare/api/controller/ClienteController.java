@@ -2,7 +2,6 @@ package com.petcare.api.controller;
 
 import com.petcare.api.dto.request.ClienteRequest;
 import com.petcare.api.dto.response.ClienteResponse;
-import com.petcare.api.service.ClienteService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
